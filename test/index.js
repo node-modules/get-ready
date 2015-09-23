@@ -78,3 +78,13 @@ describe('promise', function () {
     someClass.ready(true);
   });
 });
+
+describe('generator', function () {
+  var someClass = new SomeClass();
+  it('should work with co', function* () {
+    setTimeout(function () {
+      someClass.ready(true);
+    }, 100);
+    yield someClass.ready();
+  });
+});
