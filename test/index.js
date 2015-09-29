@@ -68,3 +68,23 @@ describe('ready', function() {
     }, 10);
   });
 });
+
+describe('promise', function () {
+  var someClass = new SomeClass();
+  it('should resolve after ready', function (done) {
+    someClass.ready().then(function () {
+      someClass.ready().then(done);
+    });
+    someClass.ready(true);
+  });
+});
+
+describe('generator', function () {
+  var someClass = new SomeClass();
+  it('should work with co', function* () {
+    setTimeout(function () {
+      someClass.ready(true);
+    }, 100);
+    yield someClass.ready();
+  });
+});

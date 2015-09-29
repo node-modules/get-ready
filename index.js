@@ -2,7 +2,16 @@ function ready(flagOrFunction) {
   this._ready = !!this._ready;
   this._readyCallbacks = this._readyCallbacks || [];
 
-  if ('function' === typeof(flagOrFunction)) {
+  if (arguments.length === 0) {
+    // return a promise
+    // support `this.ready().then(onready);` and `yield this.ready()`;
+    return new Promise(function (resolve, reject) {
+      if (this._ready) {
+        return resolve();
+      }
+      this._readyCallbacks.push(resolve);
+    }.bind(this));
+  } else if ('function' === typeof(flagOrFunction)) {
     this._readyCallbacks.push(flagOrFunction);
   } else {
     this._ready = !!flagOrFunction;
