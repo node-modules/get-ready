@@ -31,8 +31,9 @@ This is a module for everyone who has bound an event handler.on('ready', functio
 If you use this mixin, you must have 'ready', '_ready', and '_readyCallbacks' available on your class. Ready will stomp on these variables if you're trying to use them in your class.
 
 ## Example
-```javascript
-var ready = require('ready');
+
+```js
+const ready = require('get-ready');
 
 // example class that uses Ready
 function MyClass() {
