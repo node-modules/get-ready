@@ -1,7 +1,24 @@
-ready
+get-ready
 =====
 
-[![Build Status](https://travis-ci.org/supershabam/ready.png)](https://travis-ci.org/supershabam/ready)
+[![NPM version][npm-image]][npm-url]
+[![build status][travis-image]][travis-url]
+[![Test coverage][codecov-image]][codecov-url]
+[![David deps][david-image]][david-url]
+[![npm download][download-image]][download-url]
+
+[npm-image]: https://img.shields.io/npm/v/get-ready.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/get-ready
+[travis-image]: https://img.shields.io/travis/node-modules/ready.svg?style=flat-square
+[travis-url]: https://travis-ci.org/node-modules/ready
+[codecov-image]: https://codecov.io/github/node-modules/ready/coverage.svg?branch=master
+[codecov-url]: https://codecov.io/github/node-modules/ready?branch=master
+[david-image]: https://img.shields.io/david/node-modules/ready.svg?style=flat-square
+[david-url]: https://david-dm.org/node-modules/ready
+[download-image]: https://img.shields.io/npm/dm/get-ready.svg?style=flat-square
+[download-url]: https://npmjs.org/package/get-ready
+
+**Fork from [supershabam/ready](https://github.com/supershabam/ready)**
 
 NodeJS mixin to add one-time ready event
 
@@ -24,7 +41,7 @@ function MyClass() {
 ready.mixin(MyClass.prototype);
 
 // Normal class prototype functions
-MyClass.prototype.doSomeWork = function() {}; 
+MyClass.prototype.doSomeWork = function() {};
 
 // Create a new class that uses ready mixin
 var myClass = new MyClass();
@@ -50,3 +67,7 @@ myClass.ready(function() {
   console.log('I will not fire until you set ready to true again.');
 });
 ```
+
+## License
+
+[MIT](LICENSE)

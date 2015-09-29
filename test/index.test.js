@@ -1,23 +1,25 @@
-var ready = require('../')
-  , util = require('util')
-  , should = require('should')
-  ;
+'use strict';
+
+const should = require('should');
+const ready = require('../');
 
 function SomeClass() {
   this.property = 'value';
 }
 ready.mixin(SomeClass.prototype);
+
 SomeClass.prototype.method = function() {
   return 'method';
 };
 
 describe('inherits', function() {
-  var someClass = new SomeClass();
+  const someClass = new SomeClass();
+  const anotherClass = new SomeClass();
+
   it('should have Ready properties', function() {
     someClass.should.have.property('ready');
   });
 
-  var anotherClass = new SomeClass();
   it('should be separate from other instances', function() {
     anotherClass.ready(function() {});
     someClass.ready(function() {});
@@ -27,15 +29,16 @@ describe('inherits', function() {
   });
 
   it('should ready(obj) directly work', function () {
-    var foo = {};
+    const foo = {};
     should.not.exist(foo.ready);
     ready(foo);
-    foo.ready.should.be.a('function');
+    foo.ready.should.be.a.Function;
   });
 });
 
 describe('ready', function() {
-  var someClass = new SomeClass();
+  const someClass = new SomeClass();
+
   it('should queue callbacks', function() {
     someClass.ready(function() {});
     someClass.should.have.property('_readyCallbacks').with.length(1);
@@ -70,8 +73,8 @@ describe('ready', function() {
 });
 
 describe('promise', function () {
-  var someClass = new SomeClass();
   it('should resolve after ready', function (done) {
+    const someClass = new SomeClass();
     someClass.ready().then(function () {
       someClass.ready().then(done);
     });
@@ -80,8 +83,8 @@ describe('promise', function () {
 });
 
 describe('generator', function () {
-  var someClass = new SomeClass();
   it('should work with co', function* () {
+    const someClass = new SomeClass();
     setTimeout(function () {
       someClass.ready(true);
     }, 100);

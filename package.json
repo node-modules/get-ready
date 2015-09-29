@@ -1,32 +1,36 @@
 {
-  "name": "ready",
-  "version": "0.1.1",
+  "name": "get-ready",
+  "version": "1.0.0",
   "description": "mixin to add one-time ready event callback handler",
   "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
+  "files": [
+    "index.js"
+  ],
   "dependencies": {},
   "devDependencies": {
-    "co-mocha": "~1.1.2",
-    "mocha": "~2.3.3",
-    "should": "~0.6.3"
+    "eslint": "1",
+    "istanbul": "0",
+    "mocha": "2",
+    "should": "7",
+    "thunk-mocha": "0"
   },
   "scripts": {
-    "test": "mocha --require co-mocha"
+    "lint": "eslint index.js test",
+    "test": "mocha -r thunk-mocha test/*.test.js",
+    "test-cov": "istanbul cover node_modules/.bin/_mocha -- -r thunk-mocha test/*.test.js"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/supershabam/ready"
+    "url": "git://github.com/node-modules/ready"
   },
   "keywords": [
     "ready",
     "once",
     "event"
   ],
-  "author": "Ian Hansen <ian@supershabam.com>",
+  "author": "fengmk2 <m@fengmk2.com> (http://fengmk2.com)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/supershabam/ready/issues"
+    "url": "https://github.com/node-modules/ready/issues"
   }
 }
