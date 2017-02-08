@@ -1,93 +1,167 @@
 'use strict';
 
-const should = require('should');
+const assert = require('assert');
 const ready = require('../');
 
-function SomeClass() {
-  this.property = 'value';
+class SomeClass {
+  constructor() {
+    this.property = 'value';
+    ready.mixin(this);
+  }
+
+  method() {
+    return 'method';
+  }
 }
-ready.mixin(SomeClass.prototype);
 
-SomeClass.prototype.method = function() {
-  return 'method';
-};
-
-describe('inherits', function() {
-  const someClass = new SomeClass();
-  const anotherClass = new SomeClass();
-
-  it('should have Ready properties', function() {
-    someClass.should.have.property('ready');
+describe('exports', () => {
+  it('should exports mixin', () => {
+    assert(ready.mixin);
+    assert(ready.mixin === ready);
   });
 
-  it('should be separate from other instances', function() {
-    anotherClass.ready(function() {});
-    someClass.ready(function() {});
-    someClass.ready(function() {});
-    anotherClass.should.have.property('_readyCallbacks').with.length(1);
-    someClass.should.have.property('_readyCallbacks').with.length(2);
-  });
-
-  it('should ready(obj) directly work', function () {
-    const foo = {};
-    should.not.exist(foo.ready);
-    ready(foo);
-    foo.ready.should.be.a.Function;
+  it('should exports Ready', () => {
+    assert(ready.Ready);
   });
 });
 
-describe('ready', function() {
-  const someClass = new SomeClass();
+describe('mixin', () => {
+  it('should not throw when mixin undefined', () => {
+    ready();
+  });
+});
 
-  it('should queue callbacks', function() {
-    someClass.ready(function() {});
-    someClass.should.have.property('_readyCallbacks').with.length(1);
-    someClass.ready(function() {});
-    someClass.should.have.property('_readyCallbacks').with.length(2);
+describe('inherits', () => {
+
+  it('should have Ready properties', () => {
+    const someClass = new SomeClass();
+    assert('ready' in someClass);
   });
 
-  it('should execute and dequeue callbacks', function(done) {
-    someClass.should.have.property('_readyCallbacks').with.length(2);
-    someClass.ready(function() {
-      someClass.should.have.property('_readyCallbacks').with.length(0);
-      done();
-    });
+  it('should be separate from other instances', function* () {
+    const someClass = new SomeClass();
+    const anotherClass = new SomeClass();
+    let someCallCount = 0;
+    let anotherCallCount = 0;
+    anotherClass.ready(() => { anotherCallCount++; });
+    someClass.ready(() => { someCallCount++; });
+    someClass.ready(() => { someCallCount++; });
     someClass.ready(true);
+    anotherClass.ready(true);
+    yield nextTick();
+    assert(someCallCount === 2);
+    assert(anotherCallCount === 1);
+  });
+
+  it('should ready(obj) directly work', () => {
+    const foo = {};
+    assert(!('ready' in foo));
+    ready(foo);
+    assert(typeof foo.ready === 'function');
+  });
+});
+
+describe('ready', () => {
+
+  it('should execute and dequeue callbacks', function* () {
+    const someClass = new SomeClass();
+    const arr = [];
+    someClass.ready(() => arr.push(1));
+    someClass.ready(() => arr.push(2));
+    someClass.ready(true);
+    yield nextTick();
+    assert.deepEqual(arr, [ 1, 2 ]);
+
+    someClass.ready(true);
+    yield nextTick();
+    assert.deepEqual(arr, [ 1, 2 ]);
   });
 
   it('should immediatly call callback when already ready', function(done) {
-    someClass.ready(function() {
-      done();
-    });
+    const someClass = new SomeClass();
+    someClass.ready(true);
+    someClass.ready(done);
   });
 
   it('should not call when ready set to false', function(done) {
+    const someClass = new SomeClass();
+    someClass.ready(true);
     someClass.ready(false);
-    someClass.ready(function(done) {
-      done('should not execute because it is not ready');
-    });
-    setTimeout(function() {
+    someClass.ready(done => done('should not execute because it is not ready'));
+    setTimeout(() => {
       done();
     }, 10);
   });
+
+  it('should ready when using other type', done => {
+    const someClass = new SomeClass();
+    someClass.ready(done);
+    someClass.ready(0);
+  });
 });
 
-describe('promise', function () {
-  it('should resolve after ready', function (done) {
+describe('promise', () => {
+  it('should resolve after ready', function(done) {
     const someClass = new SomeClass();
-    someClass.ready().then(function () {
+    someClass.ready().then(() => {
       someClass.ready().then(done);
     });
     someClass.ready(true);
   });
 });
 
-describe('generator', function () {
+describe('generator', () => {
   it('should work with co', function* () {
     const someClass = new SomeClass();
-    setTimeout(function () {
+    setTimeout(() => {
       someClass.ready(true);
     }, 100);
     yield someClass.ready();
   });
 });
+
+describe('error', () => {
+  it('should get error in callback', done => {
+    const someClass = new SomeClass();
+    someClass.ready(err => {
+      assert(err);
+      assert(err.message === 'error');
+      done();
+    });
+    someClass.ready(new Error('error'));
+  });
+
+  it('should get error in promise', done => {
+    const someClass = new SomeClass();
+    someClass.ready().then(err => {
+      assert(err);
+      assert(err.message === 'error');
+      done();
+    });
+    someClass.ready(new Error('error'));
+  });
+
+  it('should get error after ready in callback', done => {
+    const someClass = new SomeClass();
+    someClass.ready(new Error('error'));
+    someClass.ready(err => {
+      assert(err);
+      assert(err.message === 'error');
+      done();
+    });
+  });
+
+  it('should get error after ready in promise', done => {
+    const someClass = new SomeClass();
+    someClass.ready(new Error('error'));
+    someClass.ready().then(err => {
+      assert(err);
+      assert(err.message === 'error');
+      done();
+    });
+  });
+});
+
+function nextTick() {
+  return done => process.nextTick(done);
+}
