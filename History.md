@@ -1,4 +1,10 @@
 
+2.0.0 / 2017-02-08
+==================
+
+  * feat: [BREAKING_CHANGE] reimplement get-ready (#2)
+  * fix typo on readme
+
 1.0.0 / 2015-09-29
 ==================
 
