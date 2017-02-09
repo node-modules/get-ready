@@ -1,4 +1,9 @@
 
+2.0.1 / 2017-02-09
+==================
+
+  * fix: it should reject error when ready return promise (#3)
+
 2.0.0 / 2017-02-08
 ==================
 
