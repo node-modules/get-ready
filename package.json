@@ -1,6 +1,6 @@
 {
   "name": "get-ready",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "mixin to add one-time ready event callback handler",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

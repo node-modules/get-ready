@@ -1,3 +1,17 @@
+# Changelog
+
+## [3.0.0](https://github.com/node-modules/get-ready/compare/v2.0.1...v3.0.0) (2023-06-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* Drop Node.js < 16.13.0 support
+
+https://github.com/eggjs/egg-core/issues/264
+
+### Features
+
+* refactor with typescript ([#1](https://github.com/node-modules/get-ready/issues/1)) ([9eb913f](https://github.com/node-modules/get-ready/commit/9eb913fb43889b2c253bab7b1adc139b60747684))
 
 2.0.1 / 2017-02-09
 ==================
