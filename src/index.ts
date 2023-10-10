@@ -1,7 +1,7 @@
 export type CallbackFunction = (err?: Error) => void;
 export type ReadyFunctionArg = boolean | Error | CallbackFunction | undefined;
 
-export default class Ready {
+export class Ready {
   #isReady: boolean;
   #readyCallbacks: CallbackFunction[];
   #readyArg?: Error = undefined;
@@ -79,3 +79,5 @@ export default class Ready {
     obj.ready = (flagOrFunction: any) => ready.ready(flagOrFunction);
   }
 }
+
+export default Ready;

@@ -1,5 +1,5 @@
 import { strict as assert } from 'node:assert';
-import Ready, { ReadyFunctionArg } from '../src/index';
+import Ready, { ReadyFunctionArg, Ready as ReadyBase } from '../src/index.js';
 
 class SomeClass {
   property: string;
@@ -12,6 +12,19 @@ class SomeClass {
 
   ready(arg?: ReadyFunctionArg) {
     return this.#readyObject.ready(arg);
+  }
+
+  method() {
+    return 'method';
+  }
+}
+
+class ReadySubClass extends ReadyBase {
+  property: string;
+
+  constructor() {
+    super();
+    this.property = 'value';
   }
 
   method() {
@@ -157,6 +170,29 @@ describe('error', () => {
       assert(err.message === 'error');
       done();
     });
+  });
+});
+
+describe('work on Ready SubClass', () => {
+  it('should have Ready properties', () => {
+    const someClass = new ReadySubClass();
+    assert('ready' in someClass);
+    assert.equal(typeof someClass.ready, 'function');
+  });
+
+  it('should be separate from other instances', async () => {
+    const someClass = new ReadySubClass();
+    const anotherClass = new ReadySubClass();
+    let someCallCount = 0;
+    let anotherCallCount = 0;
+    anotherClass.ready(() => { anotherCallCount++; });
+    someClass.ready(() => { someCallCount++; });
+    someClass.ready(() => { someCallCount++; });
+    someClass.ready(true);
+    anotherClass.ready(true);
+    await nextTick();
+    assert(someCallCount === 2);
+    assert(anotherCallCount === 1);
   });
 });
 
