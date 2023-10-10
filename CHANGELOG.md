@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/node-modules/get-ready/compare/v3.0.0...v3.1.0) (2023-10-10)
+
+
+### Features
+
+* support esm and cjs both ([#3](https://github.com/node-modules/get-ready/issues/3)) ([ac03fe2](https://github.com/node-modules/get-ready/commit/ac03fe2001f8d4072512b4ca10ab7b0d9af026ba))
+
 ## [3.0.0](https://github.com/node-modules/get-ready/compare/v2.0.1...v3.0.0) (2023-06-05)
 
 
