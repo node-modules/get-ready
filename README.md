@@ -21,7 +21,7 @@ one-time ready event object.
 Create `ready` event object.
 
 ```ts
-import Ready from 'get-ready';
+import { Ready } from 'get-ready';
 
 const obj = new Ready();
 
@@ -85,7 +85,6 @@ obj.ready(new Error('err'));
 
 |[<img src="https://avatars.githubusercontent.com/u/221826?v=4" width="100px;"/><br/><sub><b>supershabam</b></sub>](https://github.com/supershabam)<br/>|[<img src="https://avatars.githubusercontent.com/u/156269?v=4" width="100px;"/><br/><sub><b>fengmk2</b></sub>](https://github.com/fengmk2)<br/>|[<img src="https://avatars.githubusercontent.com/u/360661?v=4" width="100px;"/><br/><sub><b>popomore</b></sub>](https://github.com/popomore)<br/>|[<img src="https://avatars.githubusercontent.com/u/985607?v=4" width="100px;"/><br/><sub><b>dead-horse</b></sub>](https://github.com/dead-horse)<br/>|[<img src="https://avatars.githubusercontent.com/u/32174276?v=4" width="100px;"/><br/><sub><b>semantic-release-bot</b></sub>](https://github.com/semantic-release-bot)<br/>|
 | :---: | :---: | :---: | :---: | :---: |
-
 
 This project follows the git-contributor [spec](https://github.com/xudafeng/git-contributor), auto updated at `Mon Jun 05 2023 14:06:50 GMT+0800`.
 

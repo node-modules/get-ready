@@ -2,15 +2,8 @@
   "extends": "@eggjs/tsconfig",
   "compilerOptions": {
     "target": "ES2022",
-    "module": "Node16",
-    "outDir": "lib",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "useUnknownInCatchVariables": false
-  },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules",
-    "test"
-  ]
+  }
 }
