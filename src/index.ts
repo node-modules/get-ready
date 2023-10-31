@@ -1,23 +1,24 @@
-export type CallbackFunction = (err?: Error) => void;
+export type CallbackFunction = (err?: Error, resolvedData?: any) => void;
 export type ReadyFunctionArg = boolean | Error | CallbackFunction | undefined;
 
 export class Ready {
   #isReady: boolean;
   #readyCallbacks: CallbackFunction[];
   #readyArg?: Error = undefined;
+  #resolved?: any = undefined;
 
   constructor() {
     this.#isReady = false;
     this.#readyCallbacks = [];
   }
 
-  ready(flagOrFunction?: ReadyFunctionArg) {
+  ready(flagOrFunction?: ReadyFunctionArg, resolved?: unknown) {
     // register a callback
     if (flagOrFunction === undefined || typeof flagOrFunction === 'function') {
       return this.#register(flagOrFunction);
     }
     // emit callbacks
-    this.#emit(flagOrFunction);
+    this.#emit(flagOrFunction, resolved);
   }
 
   /**
@@ -28,15 +29,15 @@ export class Ready {
     // support `this.ready().then(onready);` and `await this.ready()`;
     if (!func) {
       return new Promise<void>((resolve, reject) => {
-        function func(err?: Error) {
+        function func(err?: Error, data?: any) {
           if (err) {
             reject(err);
           } else {
-            resolve();
+            resolve(data);
           }
         }
         if (this.#isReady) {
-          return func(this.#readyArg);
+          return func(this.#readyArg, this.#resolved);
         }
         this.#readyCallbacks.push(func);
       });
@@ -44,7 +45,7 @@ export class Ready {
 
     // this.ready(fn)
     if (this.#isReady) {
-      func(this.#readyArg);
+      func(this.#readyArg, this.#resolved);
     } else {
       this.#readyCallbacks.push(func);
     }
@@ -55,7 +56,7 @@ export class Ready {
    * If the flag is not false, it will be marked as ready. Then the callbacks will be called immediatly when register.
    * @param {Boolean|Error} flag - Set a flag whether it had been ready. If the flag is an error, it's also ready, but the callback will be called with argument `error`
    */
-  #emit(flag: boolean | Error) {
+  #emit(flag: boolean | Error, resolved?: unknown) {
     // this.ready(true);
     // this.ready(false);
     // this.ready(err);
@@ -65,7 +66,7 @@ export class Ready {
     if (this.#isReady) {
       this.#readyCallbacks
         .splice(0, Infinity)
-        .forEach(callback => process.nextTick(() => callback(this.#readyArg)));
+        .forEach(callback => process.nextTick(() => callback(this.#readyArg, resolved)));
     }
   }
 
@@ -76,7 +77,7 @@ export class Ready {
     if (!obj) return;
     const ready = new Ready();
     // delegate method
-    obj.ready = (flagOrFunction: any) => ready.ready(flagOrFunction);
+    obj.ready = (flagOrFunction: any, resolved?: unknown) => ready.ready(flagOrFunction, resolved);
   }
 }
 
