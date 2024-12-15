@@ -4,6 +4,7 @@
 [![CI](https://github.com/node-modules/get-ready/actions/workflows/nodejs.yml/badge.svg)](https://github.com/node-modules/get-ready/actions/workflows/nodejs.yml)
 [![Test coverage][codecov-image]][codecov-url]
 [![npm download][download-image]][download-url]
+[![Node.js Version](https://img.shields.io/node/v/get-ready.svg?style=flat)](https://nodejs.org/en/download/)
 
 [npm-image]: https://img.shields.io/npm/v/get-ready.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/get-ready
@@ -51,6 +52,16 @@ obj.ready(true);
 obj.ready().then(() => console.log('ready'));
 ```
 
+### ReadyEventEmitter
+
+```ts
+import { ReadyEventEmitter } from 'get-ready';
+
+class MyClass extends ReadyEventEmitter {
+  // your handler here
+}
+```
+
 **Warning: the callback is called after nextTick**
 
 ### Emit
@@ -79,13 +90,8 @@ obj.ready(new Error('err'));
 
 [MIT](LICENSE)
 
-<!-- GITCONTRIBUTOR_START -->
-
 ## Contributors
 
-|[<img src="https://avatars.githubusercontent.com/u/221826?v=4" width="100px;"/><br/><sub><b>supershabam</b></sub>](https://github.com/supershabam)<br/>|[<img src="https://avatars.githubusercontent.com/u/156269?v=4" width="100px;"/><br/><sub><b>fengmk2</b></sub>](https://github.com/fengmk2)<br/>|[<img src="https://avatars.githubusercontent.com/u/360661?v=4" width="100px;"/><br/><sub><b>popomore</b></sub>](https://github.com/popomore)<br/>|[<img src="https://avatars.githubusercontent.com/u/985607?v=4" width="100px;"/><br/><sub><b>dead-horse</b></sub>](https://github.com/dead-horse)<br/>|[<img src="https://avatars.githubusercontent.com/u/32174276?v=4" width="100px;"/><br/><sub><b>semantic-release-bot</b></sub>](https://github.com/semantic-release-bot)<br/>|
-| :---: | :---: | :---: | :---: | :---: |
+[![Contributors](https://contrib.rocks/image?repo=node-modules/get-ready)](https://github.com/node-modules/get-ready/graphs/contributors)
 
-This project follows the git-contributor [spec](https://github.com/xudafeng/git-contributor), auto updated at `Mon Jun 05 2023 14:06:50 GMT+0800`.
-
-<!-- GITCONTRIBUTOR_END -->
+Made with [contributors-img](https://contrib.rocks).
