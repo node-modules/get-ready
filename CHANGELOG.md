@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.0](https://github.com/node-modules/get-ready/compare/v3.1.0...v3.2.0) (2024-12-15)
+
+
+### Features
+
+* merge Ready and EventEmitter ([#5](https://github.com/node-modules/get-ready/issues/5)) ([bb049ea](https://github.com/node-modules/get-ready/commit/bb049ea9a90550906ad046663aad401af694df26))
+
 ## [3.1.0](https://github.com/node-modules/get-ready/compare/v3.0.0...v3.1.0) (2023-10-10)
 
 
