@@ -1,5 +1,4 @@
 import { strict as assert } from 'node:assert';
-import { setImmediate } from 'node:timers/promises';
 import Ready, { ReadyFunctionArg, Ready as ReadyBase, ReadyEventEmitter } from '../src/index.js';
 
 class SomeClass {
@@ -144,7 +143,7 @@ describe('new ReadyEventClass()', () => {
       gotReadyEvent = true;
     });
     someClass.ready(true);
-    await setImmediate();
+    await someClass.ready();
     assert.equal(gotReadyEvent, true);
   });
 });
