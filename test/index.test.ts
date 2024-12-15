@@ -1,5 +1,5 @@
 import { strict as assert } from 'node:assert';
-import Ready, { ReadyFunctionArg, Ready as ReadyBase } from '../src/index.js';
+import Ready, { ReadyFunctionArg, Ready as ReadyBase, ReadyEventEmitter } from '../src/index.js';
 
 class SomeClass {
   property: string;
@@ -10,8 +10,13 @@ class SomeClass {
     this.#readyObject = new Ready();
   }
 
+  ready(): Promise<void>;
+  ready(arg: ReadyFunctionArg): void;
   ready(arg?: ReadyFunctionArg) {
-    return this.#readyObject.ready(arg);
+    if (arg === undefined) {
+      return this.#readyObject.ready();
+    }
+    this.#readyObject.ready(arg);
   }
 
   method() {
@@ -25,6 +30,22 @@ class ReadySubClass extends ReadyBase {
   constructor() {
     super();
     this.property = 'value';
+  }
+
+  method() {
+    return 'method';
+  }
+}
+
+class ReadyEventClass extends ReadyEventEmitter {
+  property: string;
+
+  constructor() {
+    super();
+    this.property = 'value';
+    this.ready(() => {
+      this.emit('ready-event');
+    });
   }
 
   method() {
@@ -88,7 +109,7 @@ describe('new Ready()', () => {
     assert.deepEqual(arr, [ 1, 2 ]);
   });
 
-  it('should immediatly call callback when already ready', done => {
+  it('should immediately call callback when already ready', done => {
     const someClass = new SomeClass();
     someClass.ready(true);
     someClass.ready(done);
@@ -113,11 +134,25 @@ describe('new Ready()', () => {
   });
 });
 
+describe('new ReadyEventClass()', () => {
+  it('should have Ready properties', async () => {
+    const someClass = new ReadyEventClass();
+    assert('ready' in someClass);
+    let gotReadyEvent = false;
+    someClass.on('ready-event', () => {
+      gotReadyEvent = true;
+    });
+    someClass.ready(true);
+    await someClass.ready();
+    assert.equal(gotReadyEvent, true);
+  });
+});
+
 describe('promise', () => {
   it('should resolve after ready', done => {
     const someClass = new SomeClass();
-    someClass.ready()!.then(() => {
-      someClass.ready()!.then(done);
+    someClass.ready().then(() => {
+      someClass.ready().then(done);
     });
     someClass.ready(true);
   });
@@ -144,7 +179,7 @@ describe('error', () => {
 
   it('should get error in promise', done => {
     const someClass = new SomeClass();
-    someClass.ready()!.catch(err => {
+    someClass.ready().catch(err => {
       assert(err);
       assert(err.message === 'error');
       done();
@@ -165,7 +200,7 @@ describe('error', () => {
   it('should get error after ready in promise', done => {
     const someClass = new SomeClass();
     someClass.ready(new Error('error'));
-    someClass.ready()!.catch(err => {
+    someClass.ready().catch(err => {
       assert(err);
       assert(err.message === 'error');
       done();

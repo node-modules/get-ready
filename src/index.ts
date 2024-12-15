@@ -1,5 +1,7 @@
+import { EventEmitter } from 'node:events';
+
 export type CallbackFunction = (err?: Error) => void;
-export type ReadyFunctionArg = boolean | Error | CallbackFunction | undefined;
+export type ReadyFunctionArg = boolean | Error | CallbackFunction;
 
 export class Ready {
   #isReady: boolean;
@@ -11,6 +13,8 @@ export class Ready {
     this.#readyCallbacks = [];
   }
 
+  ready(): Promise<void>;
+  ready(flagOrFunction: ReadyFunctionArg): void;
   ready(flagOrFunction?: ReadyFunctionArg) {
     // register a callback
     if (flagOrFunction === undefined || typeof flagOrFunction === 'function') {
@@ -25,7 +29,7 @@ export class Ready {
    * It will return promise when no argument passing.
    */
   #register(func?: CallbackFunction) {
-    // support `this.ready().then(onready);` and `await this.ready()`;
+    // support `this.ready().then(onReady);` and `await this.ready()`;
     if (!func) {
       return new Promise<void>((resolve, reject) => {
         function func(err?: Error) {
@@ -51,8 +55,8 @@ export class Ready {
   }
 
   /**
-   * Call the callbacks that has been registerd, and clean the callback stack.
-   * If the flag is not false, it will be marked as ready. Then the callbacks will be called immediatly when register.
+   * Call the callbacks that has been registered, and clean the callback stack.
+   * If the flag is not false, it will be marked as ready. Then the callbacks will be called immediately when register.
    * @param {Boolean|Error} flag - Set a flag whether it had been ready. If the flag is an error, it's also ready, but the callback will be called with argument `error`
    */
   #emit(flag: boolean | Error) {
@@ -76,8 +80,23 @@ export class Ready {
     if (!obj) return;
     const ready = new Ready();
     // delegate method
-    obj.ready = (flagOrFunction: any) => ready.ready(flagOrFunction);
+    obj.ready = (flagOrFunction: any) => {
+      return ready.ready(flagOrFunction);
+    };
   }
 }
 
 export default Ready;
+
+export class ReadyEventEmitter extends EventEmitter {
+  #readyObj = new Ready();
+
+  ready(): Promise<void>;
+  ready(flagOrFunction: ReadyFunctionArg): void;
+  ready(flagOrFunction?: ReadyFunctionArg) {
+    if (flagOrFunction === undefined) {
+      return this.#readyObj.ready();
+    }
+    this.#readyObj.ready(flagOrFunction);
+  }
+}
