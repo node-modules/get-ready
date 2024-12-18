@@ -32,6 +32,10 @@ export class Ready {
     return this.#readyError;
   }
 
+  get hasReadyCallbacks() {
+    return this.#readyCallbacks.length > 0;
+  }
+
   /**
    * Register a callback to the callback stack, it will be called when emit.
    * It will return promise when no argument passing.
@@ -96,6 +100,9 @@ export class Ready {
 
 export default Ready;
 
+/**
+ * EventEmitter Ready Wrapper
+ */
 export class ReadyEventEmitter extends EventEmitter {
   #readyObj = new Ready();
 
@@ -114,5 +121,9 @@ export class ReadyEventEmitter extends EventEmitter {
 
   get readyError() {
     return this.#readyObj.readyError;
+  }
+
+  get hasReadyCallbacks() {
+    return this.#readyObj.hasReadyCallbacks;
   }
 }

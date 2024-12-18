@@ -139,16 +139,20 @@ describe('new Ready()', () => {
 });
 
 describe('new ReadyEventClass()', () => {
-  it('should have Ready properties', async () => {
+  it('should have ready properties', async () => {
     const someClass = new ReadyEventClass();
     assert('ready' in someClass);
+    assert.equal(someClass.hasReadyCallbacks, true);
     let gotReadyEvent = false;
     someClass.on('ready-event', () => {
       gotReadyEvent = true;
     });
+    someClass.ready(() => {});
+    assert.equal(someClass.hasReadyCallbacks, true);
     someClass.ready(true);
     await someClass.ready();
     assert.equal(gotReadyEvent, true);
+    assert.equal(someClass.hasReadyCallbacks, false);
 
     assert.equal(someClass.isReady, true);
     assert.equal(someClass.readyError, undefined);
@@ -160,6 +164,8 @@ describe('new ReadyEventClass()', () => {
     }, /mock error/);
     assert.equal(someClass.isReady, true);
     assert.equal(someClass.readyError!.message, 'mock error');
+    someClass.ready(() => {});
+    assert.equal(someClass.hasReadyCallbacks, false);
   });
 });
 
@@ -269,17 +275,20 @@ describe('work on Ready SubClass', () => {
 
   it('should be separate from other instances', async () => {
     const someClass = new ReadySubClass();
+    assert.equal(someClass.hasReadyCallbacks, false);
     const anotherClass = new ReadySubClass();
     let someCallCount = 0;
     let anotherCallCount = 0;
     anotherClass.ready(() => { anotherCallCount++; });
     someClass.ready(() => { someCallCount++; });
     someClass.ready(() => { someCallCount++; });
+    assert.equal(someClass.hasReadyCallbacks, true);
     someClass.ready(true);
     anotherClass.ready(true);
     await nextTick();
     assert(someCallCount === 2);
     assert(anotherCallCount === 1);
+    assert.equal(someClass.hasReadyCallbacks, false);
   });
 });
 
