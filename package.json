@@ -1,6 +1,6 @@
 {
   "name": "get-ready",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "description": "mixin to add one-time ready event callback handler",
   "files": [
     "src",
