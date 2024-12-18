@@ -54,8 +54,12 @@ class ReadyEventClass extends ReadyEventEmitter {
 }
 
 describe('Ready.mixin', () => {
-  it('should exports mixin', () => {
+  it('should exports mixin', async () => {
     assert(Ready.mixin);
+    const someObject: any = {};
+    Ready.mixin(someObject);
+    someObject.ready(true);
+    await someObject.ready();
   });
 
   it('should exports Ready', () => {
@@ -145,6 +149,17 @@ describe('new ReadyEventClass()', () => {
     someClass.ready(true);
     await someClass.ready();
     assert.equal(gotReadyEvent, true);
+
+    assert.equal(someClass.isReady, true);
+    assert.equal(someClass.readyError, undefined);
+
+    // ready with error
+    someClass.ready(new Error('mock error'));
+    await assert.rejects(async () => {
+      await someClass.ready();
+    }, /mock error/);
+    assert.equal(someClass.isReady, true);
+    assert.equal(someClass.readyError!.message, 'mock error');
   });
 });
 
@@ -181,7 +196,7 @@ describe('error', () => {
     const someClass = new SomeClass();
     someClass.ready().catch(err => {
       assert(err);
-      assert(err.message === 'error');
+      assert.equal(err.message, 'error');
       done();
     });
     someClass.ready(new Error('error'));
@@ -192,7 +207,7 @@ describe('error', () => {
     someClass.ready(new Error('error'));
     someClass.ready(err => {
       assert(err);
-      assert(err.message === 'error');
+      assert.equal(err.message, 'error');
       done();
     });
   });
@@ -205,6 +220,43 @@ describe('error', () => {
       assert(err.message === 'error');
       done();
     });
+  });
+
+  it('should await ready error', async () => {
+    const someClass = new ReadySubClass();
+    someClass.ready(new Error('mock async before error'));
+    await assert.rejects(async () => {
+      await someClass.ready();
+    }, /mock async before error/);
+
+    // again should throw error too
+    await assert.rejects(async () => {
+      await someClass.ready();
+    }, /mock async before error/);
+    assert(someClass.readyError instanceof Error);
+    assert.equal(someClass.isReady, true);
+
+    // set to false then ready again
+    someClass.ready(false);
+    assert.equal(someClass.isReady, false);
+    assert.equal(someClass.readyError, undefined);
+
+    setTimeout(() => {
+      someClass.ready(true);
+    }, 10);
+    await someClass.ready();
+    assert.equal(someClass.readyError, undefined);
+    assert.equal(someClass.isReady, true);
+  });
+
+  it('should await ready error', async () => {
+    const someClass = new SomeClass();
+    setTimeout(() => {
+      someClass.ready(new Error('mock async after error'));
+    }, 10);
+    await assert.rejects(async () => {
+      await someClass.ready();
+    }, /mock async after error/);
   });
 });
 

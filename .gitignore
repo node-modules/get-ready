@@ -17,3 +17,4 @@ lib
 bun.lockb
 .tshy*
 dist
+package-lock.json

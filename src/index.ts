@@ -1,12 +1,12 @@
 import { EventEmitter } from 'node:events';
 
-export type CallbackFunction = (err?: Error) => void;
+export type CallbackFunction = (err: Error | undefined) => void;
 export type ReadyFunctionArg = boolean | Error | CallbackFunction;
 
 export class Ready {
   #isReady: boolean;
   #readyCallbacks: CallbackFunction[];
-  #readyArg?: Error = undefined;
+  #readyError?: Error;
 
   constructor() {
     this.#isReady = false;
@@ -20,8 +20,16 @@ export class Ready {
     if (flagOrFunction === undefined || typeof flagOrFunction === 'function') {
       return this.#register(flagOrFunction);
     }
-    // emit callbacks
+    // get ready and emit callbacks
     this.#emit(flagOrFunction);
+  }
+
+  get isReady(): boolean {
+    return this.#isReady;
+  }
+
+  get readyError() {
+    return this.#readyError;
   }
 
   /**
@@ -29,7 +37,7 @@ export class Ready {
    * It will return promise when no argument passing.
    */
   #register(func?: CallbackFunction) {
-    // support `this.ready().then(onReady);` and `await this.ready()`;
+    // support `this.ready().then(onReady)` and `await this.ready()`
     if (!func) {
       return new Promise<void>((resolve, reject) => {
         function func(err?: Error) {
@@ -40,7 +48,7 @@ export class Ready {
           }
         }
         if (this.#isReady) {
-          return func(this.#readyArg);
+          return func(this.#readyError);
         }
         this.#readyCallbacks.push(func);
       });
@@ -48,7 +56,7 @@ export class Ready {
 
     // this.ready(fn)
     if (this.#isReady) {
-      func(this.#readyArg);
+      func(this.#readyError);
     } else {
       this.#readyCallbacks.push(func);
     }
@@ -60,16 +68,16 @@ export class Ready {
    * @param {Boolean|Error} flag - Set a flag whether it had been ready. If the flag is an error, it's also ready, but the callback will be called with argument `error`
    */
   #emit(flag: boolean | Error) {
-    // this.ready(true);
-    // this.ready(false);
-    // this.ready(err);
-    this.#isReady = flag !== false;
-    this.#readyArg = flag instanceof Error ? flag : undefined;
     // this.ready(true)
+    // this.ready(err)
+    // this.ready(false)
+    this.#isReady = flag !== false;
+    this.#readyError = flag instanceof Error ? flag : undefined;
+    // this.ready(true) or this.ready(err)
     if (this.#isReady) {
       this.#readyCallbacks
         .splice(0, Infinity)
-        .forEach(callback => process.nextTick(() => callback(this.#readyArg)));
+        .forEach(callback => process.nextTick(() => callback(this.#readyError)));
     }
   }
 
@@ -78,10 +86,10 @@ export class Ready {
    */
   static mixin(obj?: any) {
     if (!obj) return;
-    const ready = new Ready();
+    const readyObject = new Ready();
     // delegate method
     obj.ready = (flagOrFunction: any) => {
-      return ready.ready(flagOrFunction);
+      return readyObject.ready(flagOrFunction);
     };
   }
 }
@@ -98,5 +106,13 @@ export class ReadyEventEmitter extends EventEmitter {
       return this.#readyObj.ready();
     }
     this.#readyObj.ready(flagOrFunction);
+  }
+
+  get isReady(): boolean {
+    return this.#readyObj.isReady;
+  }
+
+  get readyError() {
+    return this.#readyObj.readyError;
   }
 }
