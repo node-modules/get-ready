@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.4.0](https://github.com/node-modules/get-ready/compare/v3.3.0...v3.4.0) (2024-12-18)
+
+
+### Features
+
+* export hasReadyCallbacks getter ([#7](https://github.com/node-modules/get-ready/issues/7)) ([8b09b7c](https://github.com/node-modules/get-ready/commit/8b09b7c089f76ca439e8550e0a3852e75d95f5d7))
+
 ## [3.3.0](https://github.com/node-modules/get-ready/compare/v3.2.0...v3.3.0) (2024-12-18)
 
 
